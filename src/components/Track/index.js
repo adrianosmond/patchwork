@@ -14,7 +14,7 @@ const Track = (props) => {
         </button>
       </div>
       {props.pieces.map((piece, idx) => {
-        const selectable = idx < 3 && piece.costButtons <= props.maxCost;
+        const selectable = idx < 3 && piece.costButtons <= props.maxCost && !props.placingPatch;
         return (
           <div className={`track__piece ${selectable ? '' : 'track__piece--not-selectable'}`} key={idx}
             onClick={() => {

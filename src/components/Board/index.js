@@ -124,7 +124,7 @@ class Board extends Component {
   render() {
     const {piece, board} = this.props
     return (
-      <div className={`board ${this.props.current? 'board--current' : ''}`}>
+      <div className={`board ${this.props.current || this.props.finalScore? 'board--current' : ''}`}>
         {board.map((row, ridx) =>
           <div className="board__row" key={ridx}>
             {row.map((col, cidx) =>
@@ -145,6 +145,12 @@ class Board extends Component {
           </div>
         : null}
         <div className="board__buttons">{this.props.buttons}</div>
+        {this.props.hasSevenBySeven ?
+          <div className="board__seven-by-seven">7X7</div>
+          : null}
+        {this.props.finalScore ?
+          <div className="board__final-score">{this.props.finalScore}</div>
+          : null}
       </div>
     )
   }

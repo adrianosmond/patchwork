@@ -54,7 +54,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 .board__buttons {
@@ -68,4 +68,35 @@
   background-color: var(--button-colour);
   color: #fff;
   border-radius: 50%;
+}
+
+.board__seven-by-seven {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: var(--square-size);
+  width: var(--square-size);
+  bottom: calc(var(--square-size) * -1.25);
+  left: calc(var(--square-size) * 2);
+  font-size: 12px;
+  background-color: var(--patch-colour);
+  color: #fff;
+}
+
+.board__final-score {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(var(--square-size) * 4);
+  width: calc(var(--square-size) * 4);
+  margin-top: calc(var(--square-size) * -2);
+  margin-left: calc(var(--square-size) * -2);
+
+  top: 50%;
+  left: 50%;
+  font-size: 50px;
+  background-color: var(--button-colour);
+  color: #fff;
 }
