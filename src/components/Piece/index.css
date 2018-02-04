@@ -1,0 +1,36 @@
+:root {
+  --square-size: 50px;
+  --button-colour: blue;
+}
+
+.piece {
+}
+
+.piece__row {
+  display: flex;
+}
+
+.piece__square {
+  height: var(--square-size);
+  width: var(--square-size);
+}
+
+.piece__square--solid {
+  background-color: #999;
+}
+
+.piece__square--has-button {
+  position: relative;
+}
+
+.piece__square--has-button:before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background-color: var(--button-colour);
+}

@@ -1,0 +1,46 @@
+:root {
+  --grid-border-colour: #000;
+}
+
+.board {
+  position: relative;
+}
+
+.board__row {
+  display: flex;
+}
+
+.board__row:first-child .board__cell {
+  border-top: 1px solid var(--grid-border-colour);
+}
+
+.board__cell {
+  position: relative;
+  height: var(--square-size);
+  width: var(--square-size);
+  border-right: 1px solid var(--grid-border-colour);
+  border-bottom: 1px solid var(--grid-border-colour);
+}
+
+.board__cell:first-child {
+  border-left: 1px solid var(--grid-border-colour);
+}
+
+.board__piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.5;
+}
+
+.board__cell--has-button:before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background-color: var(--button-colour);
+}

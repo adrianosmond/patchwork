@@ -1,0 +1,17 @@
+.track {
+  margin-top: 2rem;
+  display: flex;
+  overflow-x: scroll;
+}
+
+.track__piece {
+  margin-left: 2rem;
+}
+
+.track__piece:first-child {
+  margin-left: 0;
+}
+
+.track__piece--not-selectable {
+  opacity: 0.5;
+}
