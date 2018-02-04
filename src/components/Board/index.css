@@ -4,6 +4,18 @@
 
 .board {
   position: relative;
+  margin-bottom: var(--square-size);
+  display: inline-block;
+  background: repeating-linear-gradient(45deg, #fff 0, #fff 5px, rgba(0, 255, 0, 0.1) 5px, rgba(0, 255, 0, 0.1) 10px);
+}
+
+.board + .board {
+  margin-left: calc(2 * var(--square-size));
+  background: repeating-linear-gradient(135deg, #fff 0, #fff 5px, rgba(255, 255, 0, 0.2) 5px, rgba(255, 255, 0, 0.2) 10px);
+}
+
+.board:not(.board--current) {
+  filter: grayscale(1);
 }
 
 .board__row {
@@ -26,13 +38,6 @@
   border-left: 1px solid var(--grid-border-colour);
 }
 
-.board__piece {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0.5;
-}
-
 .board__cell--has-button:before {
   content: "";
   position: absolute;
@@ -43,4 +48,24 @@
   border-radius: 50%;
   border: 2px solid #fff;
   background-color: var(--button-colour);
+}
+
+.board__piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.5;
+}
+
+.board__buttons {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: var(--square-size);
+  width: var(--square-size);
+  bottom: calc(var(--square-size) * -1.25);
+  background-color: var(--button-colour);
+  color: #fff;
+  border-radius: 50%;
 }

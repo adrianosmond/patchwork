@@ -1,0 +1,4 @@
+const BUTTONS_AFTER = [4, 10, 16, 22, 28, 34, 40, 46, 52]
+const PATCHES_AFTER = [19, 25, 31, 43, 49]
+
+export { BUTTONS_AFTER, PATCHES_AFTER }

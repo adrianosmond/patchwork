@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import Piece from '../Piece'
 
-import { BOARD_SIZE, TILE_SIZE, board } from '../../constants/board'
+import { BOARD_SIZE, TILE_SIZE } from '../../constants/board'
 
 import './index.css'
 
@@ -10,7 +10,6 @@ class Board extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      board,
       pieceTop: 0,
       pieceLeft: 0
     }
@@ -93,7 +92,8 @@ class Board extends Component {
   }
 
   placePiece() {
-    const {board, pieceTop, pieceLeft} = this.state
+    const {pieceTop, pieceLeft} = this.state
+    const {board} = this.props
     const {shape, colour} = this.props.piece
     const pieceWidth = shape[0].length
     const pieceHeight = shape.length
@@ -102,7 +102,7 @@ class Board extends Component {
     for (let i=0; i<pieceHeight; i++) {
       for (let j=0; j<pieceWidth; j++) {
         if (shape[i][j] === 0) continue
-        if (board[pieceTop + i][pieceLeft+j] > 0) {
+        if (board[pieceTop + i][pieceLeft+j] !== false) {
           return;
         } else {
           newBoard[pieceTop + i][pieceLeft+j] = {
@@ -114,19 +114,17 @@ class Board extends Component {
     }
 
     this.setState({
-      board: newBoard,
       pieceTop: 0,
       pieceLeft: 0
     })
 
-    this.props.piecePlaced()
+    this.props.piecePlaced(newBoard)
   }
 
   render() {
-    const {board} = this.state
-    const {piece} = this.props
+    const {piece, board} = this.props
     return (
-      <div className="board">
+      <div className={`board ${this.props.current? 'board--current' : ''}`}>
         {board.map((row, ridx) =>
           <div className="board__row" key={ridx}>
             {row.map((col, cidx) =>
@@ -146,6 +144,7 @@ class Board extends Component {
             <Piece piece={piece} />
           </div>
         : null}
+        <div className="board__buttons">{this.props.buttons}</div>
       </div>
     )
   }

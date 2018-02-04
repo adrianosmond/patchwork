@@ -1,0 +1,72 @@
+:root {
+  --patch-colour: brown;
+}
+
+.scoreboard {
+  margin-bottom: var(--square-size);
+}
+
+.scoreboard__track {
+  display: flex;
+  overflow-x: scroll;
+  border-left: 1px solid #000;
+  border-top: 1px solid #000;
+}
+
+.scoreboard__cell {
+  position: relative;
+  height: var(--square-size);
+  min-width: var(--square-size);
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+
+.scoreboard__cell--button-after::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--square-size) / 4);
+  right: calc(var(--square-size) / -4);
+  width: calc(var(--square-size) / 2);
+  height: calc(var(--square-size) / 2);
+  border-radius: 50%;
+  background-color: var(--button-colour);
+}
+
+.scoreboard__cell--patch-after::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--square-size) / 4);
+  right: calc(var(--square-size) / -4);
+  width: calc(var(--square-size) / 2);
+  height: calc(var(--square-size) / 2);
+  background-color: var(--patch-colour);
+}
+
+.scoreboard__cell--patch-taken::after {
+  filter: grayscale(0.75);
+  opacity: 0.25;
+}
+
+.scoreboard__player {
+  position: absolute;
+  top: calc(var(--square-size) / 4);
+  left: calc(var(--square-size) / 4);
+  width: calc(var(--square-size) / 2);
+  height: calc(var(--square-size) / 2);
+  border-radius: 4px;
+  background-color: limegreen;
+}
+
+.scoreboard__player--2 {
+  background-color: gold;
+}
+
+.scoreboard__player--current {
+  z-index: 1;
+  margin-top: -4px;
+}
+
+.scoreboard__player--current:only-child {
+  z-index: 1;
+  margin-top: 0;
+}

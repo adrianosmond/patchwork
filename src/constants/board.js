@@ -1,5 +1,5 @@
 const BOARD_SIZE = 9;
-const TILE_SIZE = 50;
+const TILE_SIZE = 32;
 
 let board = []
 for (let i=0; i<BOARD_SIZE; i++) {

@@ -250,6 +250,8 @@ pieces.push(makePiece({
 }))
 
 shuffle(pieces);
+shuffle(pieces);
+shuffle(pieces);
 
 pieces.push(makePiece({
   shape: [[1,1]],
