@@ -8,7 +8,7 @@
 
 .scoreboard__track {
   display: flex;
-  overflow-x: scroll;
+  overflow-x: hidden;
   border-left: 1px solid #000;
   border-top: 1px solid #000;
 }

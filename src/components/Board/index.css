@@ -15,7 +15,7 @@
 }
 
 .board:not(.board--current) {
-  filter: grayscale(1);
+  filter: grayscale(0.9);
 }
 
 .board__row {

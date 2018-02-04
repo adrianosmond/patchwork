@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 
 import {BUTTONS_AFTER, PATCHES_AFTER} from '../../constants/scoreboard'
+import {TILE_SIZE} from '../../constants/board'
 
 import './index.css'
 
@@ -14,11 +15,16 @@ class Scoreboard extends Component {
     }
   }
 
+  componentDidUpdate() {
+    const lastPlace = Math.min(...this.state.players.map(p => p.position))
+    this.trackEl.scrollLeft = Math.max(0, TILE_SIZE * (lastPlace - 1));
+  }
+
   render() {
     const farthest = Math.max(...this.state.players.map(p => p.position))
     return (
       <div className="scoreboard">
-        <div className="scoreboard__track">
+        <div className="scoreboard__track" ref={(el)=>{this.trackEl = el}}>
           {track.map((cell, idx) =>
             <div key={idx}
               className={`scoreboard__cell ${BUTTONS_AFTER.indexOf(idx) >= 0? 'scoreboard__cell--button-after' : ''} ${PATCHES_AFTER.indexOf(idx) >= 0? 'scoreboard__cell--patch-after' : ''} ${PATCHES_AFTER.indexOf(idx) >= 0 && idx< farthest? 'scoreboard__cell--patch-taken' : ''}`}>
