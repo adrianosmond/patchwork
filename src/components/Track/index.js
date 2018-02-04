@@ -9,7 +9,7 @@ const Track = (props) => {
   return (
     <div className="track">
       <div>
-        <button className="track__make-buttons" onClick={props.makeButtons}>
+        <button className="track__make-buttons" onClick={props.makeButtons} disabled={props.placingPatch}>
           Make Buttons
         </button>
       </div>
