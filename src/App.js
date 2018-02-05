@@ -5,13 +5,12 @@ import Board from './components/Board'
 import Track from './components/Track'
 
 import { rotateShape, flipShape } from './constants/utils'
-import pieces from './constants/pieces'
-import {SCOREBOARD_LENGTH, BUTTONS_AFTER, PATCHES_AFTER} from './constants/scoreboard'
-import {INITIAL_PLAYER_STATE} from './constants/players'
+import { pieces, PATCH_INDEX } from './constants/pieces'
+import { SCOREBOARD_LENGTH, BUTTONS_AFTER, PATCHES_AFTER } from './constants/scoreboard'
+import { INITIAL_PLAYER_STATE } from './constants/players'
 
 import './App.css'
 
-const PATCH_INDEX = 1000
 const WON_PATCH = {
   selectedPieceIndex: PATCH_INDEX,
   selectedPiece: {
@@ -21,6 +20,8 @@ const WON_PATCH = {
     colour: 'var(--patch-colour)'
   }
 }
+const MOVE_TYPE_PIECE = 0;
+const MOVE_TYPE_BUTTON = 1;
 
 class App extends Component {
   constructor(props) {
@@ -31,7 +32,7 @@ class App extends Component {
         {...INITIAL_PLAYER_STATE}
       ],
       currentPlayerIdx: 0,
-      sevenBysevenWon: false,
+      sevenBySevenWon: false,
       pieces,
       selectedPiece: null,
       selectedPieceIndex: null,
@@ -40,11 +41,10 @@ class App extends Component {
   }
 
   componentDidUpdate() {
-    // console.log("Update ", this.state.players[0].position, this.state.players[1].position)
     if (!this.state.gameFinished &&
         this.state.players[0].position === SCOREBOARD_LENGTH &&
         this.state.players[1].position === SCOREBOARD_LENGTH) {
-      let newPlayers = [...this.state.players]
+      let newPlayers = this.makePlayerArrayClone()
 
       newPlayers.forEach((player) => {
         const negatives = player.board.reduce((total, currentRow) =>
@@ -62,24 +62,29 @@ class App extends Component {
     }
   }
 
-  rotate() {
-    if (!this.state.selectedPiece) return
+  piecePlaced(newBoard) {
+    this.updatePlayerState(MOVE_TYPE_PIECE, newBoard);
+  }
 
-    this.setState({
-      selectedPiece: {
-        ...this.state.selectedPiece,
-        shape: rotateShape(this.state.selectedPiece.shape)
-      }
-    })
+  makeButtons() {
+    this.updatePlayerState(MOVE_TYPE_BUTTON);
+  }
+
+  rotate() {
+    this.transformShape(rotateShape)
   }
 
   flip() {
+    this.transformShape(flipShape)
+  }
+
+  transformShape(transformFunc) {
     if (!this.state.selectedPiece) return
 
     this.setState({
       selectedPiece: {
         ...this.state.selectedPiece,
-        shape: flipShape(this.state.selectedPiece.shape)
+        shape: transformFunc(this.state.selectedPiece.shape)
       }
     })
   }
@@ -90,6 +95,67 @@ class App extends Component {
       selectedPieceIndex,
       selectedPiece
     })
+  }
+
+  makePlayerArrayClone() {
+    return [{...this.state.players[0]}, {...this.state.players[1]}]
+  }
+
+  getCurrentPlayer() {
+    return this.state.players[this.state.currentPlayerIdx]
+  }
+
+  getOpponent() {
+    return this.state.players[(this.state.currentPlayerIdx + 1) % 2]
+  }
+
+  updatePlayerState(moveType, newBoard = null) {
+    let newPlayers = this.makePlayerArrayClone()
+    let player = newPlayers[this.state.currentPlayerIdx]
+    let prevPosition = player.position
+
+    player.position = this.calculateNewPosition(moveType)
+
+    if (moveType === MOVE_TYPE_PIECE) {
+      player.board = newBoard
+      player.buttons = this.calculateNewButtons(MOVE_TYPE_PIECE, player.position, newBoard, this.state.selectedPiece)
+      player.hasSevenBySeven = this.checkSevenBySeven(player)
+      this.updatePiecesTrack()
+    } else if (moveType === MOVE_TYPE_BUTTON) {
+      player.buttons = this.calculateNewButtons(MOVE_TYPE_BUTTON, player.position, player.board)
+    }
+
+    this.setState({
+      players: newPlayers
+    })
+
+    this.checkIfPlayerPassedPatch(prevPosition, player, this.getOpponent())
+  }
+
+  calculateNewPosition(moveType) {
+    let player = this.getCurrentPlayer()
+    let opponent = this.getOpponent()
+    let newPosition = 0;
+    if (moveType === MOVE_TYPE_PIECE) {
+      const {selectedPiece} = this.state
+      newPosition = player.position + selectedPiece.costTime
+    } else {
+      newPosition = opponent.position + 1
+    }
+    if (newPosition > SCOREBOARD_LENGTH) newPosition = SCOREBOARD_LENGTH
+    return newPosition
+  }
+
+  calculateNewButtons(moveType, newPosition, playerBoard, selectedPiece = null) {
+    let player = this.getCurrentPlayer()
+    let newButtons = player.buttons;
+    if (moveType === MOVE_TYPE_PIECE) {
+      newButtons -= selectedPiece.costButtons
+    } else {
+      newButtons += newPosition - player.position
+    }
+    newButtons += this.buttonsEarned(player.position, newPosition, playerBoard)
+    return newButtons;
   }
 
   updatePiecesTrack() {
@@ -119,66 +185,19 @@ class App extends Component {
     }
   }
 
-  piecePlaced(newBoard) {
-    this.updatePiecesTrack();
-    const {selectedPiece} = this.state
-    let newPlayers = [...this.state.players]
-    let currentPlayerIdx = this.state.currentPlayerIdx
-    let player = newPlayers[currentPlayerIdx]
-    let opponent = newPlayers[(currentPlayerIdx + 1) % 2]
-    let prevPosition = player.position
-    player.board = newBoard
-    player.position += selectedPiece.costTime
-    if (player.position > SCOREBOARD_LENGTH) player.position = SCOREBOARD_LENGTH
-
-    console.log("== Placing piece");
-    console.log("==== had ", player.buttons);
-    console.log("==== cost ", selectedPiece.costButtons, " earned ", this.buttonsEarned(prevPosition, player.position, newBoard), " moved ", selectedPiece.costTime);
-    player.buttons -= selectedPiece.costButtons - this.buttonsEarned(prevPosition, player.position, newBoard)
-    console.log("==== have ", player.buttons);
-    if (!this.state.sevenBysevenWon) {
-      if (this.hasSevenBySeven(newBoard)) {
-        player.hasSevenBySeven = true
-        this.setState({
-          sevenBysevenWon: true
-        })
-      }
-    }
-
-    this.setState({
-      players: newPlayers
-    })
-
-    this.checkIfPlayerPassedPatch(prevPosition, player, opponent)
-  }
-
-  makeButtons() {
-    let newPlayers = [...this.state.players]
-    let currentPlayerIdx = this.state.currentPlayerIdx
-    let player = newPlayers[currentPlayerIdx]
-    let prevPosition = player.position
-    let opponent = newPlayers[(currentPlayerIdx + 1) % 2]
-    player.position = opponent.position + 1
-    if (player.position > SCOREBOARD_LENGTH) player.position = SCOREBOARD_LENGTH
-    console.log("== Making buttons");
-    console.log("==== had ", player.buttons);
-    console.log("==== moved ", player.position - prevPosition, " earned ", this.buttonsEarned(prevPosition, player.position, player.board));
-    player.buttons += player.position - prevPosition + this.buttonsEarned(prevPosition, player.position, player.board)
-    console.log("==== have ", player.buttons);
-
-    this.setState({
-      players: newPlayers
-    })
-
-    this.checkIfPlayerPassedPatch(prevPosition, player, opponent)
+  didPlayerPassPatch(prevPosition, currentPosition, opponentPosition) {
+    const nextPatch = PATCHES_AFTER.find((el) => el >= prevPosition)
+    if (nextPatch < opponentPosition) return false
+    else if (nextPatch < currentPosition) return true
+    else return false
   }
 
   assessCurrentPlayer (player, opponent) {
-    let currentPlayer = this.state.currentPlayerIdx
+    let currentPlayerIdx = this.state.currentPlayerIdx
     if (player.position > opponent.position) {
-      currentPlayer = (currentPlayer + 1) % 2
+      currentPlayerIdx = (currentPlayerIdx + 1) % 2
     }
-    return currentPlayer
+    return currentPlayerIdx
   }
 
   buttonsEarned(prevPosition, currentPosition, board) {
@@ -193,11 +212,16 @@ class App extends Component {
       return 0
   }
 
-  didPlayerPassPatch(prevPosition, currentPosition, opponentPosition) {
-    const nextPatch = PATCHES_AFTER.find((el) => el >= prevPosition)
-    if (nextPatch < opponentPosition) return false
-    else if (nextPatch < currentPosition) return true
-    else return false
+  checkSevenBySeven(player) {
+    if (this.state.sevenBySevenWon) return player.hasSevenBySeven;
+
+    if (this.hasSevenBySeven(player.board)) {
+      this.setState({
+        sevenBySevenWon: true
+      })
+      return true
+    }
+    return false
   }
 
   hasSevenBySeven(board) {
@@ -222,25 +246,30 @@ class App extends Component {
   }
 
   render() {
-    const currentPlayer = this.state.players[this.state.currentPlayerIdx]
+    const currentPlayer = this.getCurrentPlayer();
     return (
       <div className="App">
-        <Scoreboard players={this.state.players} currentPlayer={this.state.currentPlayerIdx}/>
+        <Scoreboard players={this.state.players}
+          currentPlayerIdx={this.state.currentPlayerIdx} />
         <div style={{
           display: 'flex',
           justifyContent: 'space-around'
         }}>
-          {this.state.players.map((player, idx)=>
-            <Board key={idx}
-              board={player.board}
-              buttons={player.buttons}
-              hasSevenBySeven={player.hasSevenBySeven}
-              finalScore={player.finalScore}
-              current={idx === this.state.currentPlayerIdx}
-              piece={idx === this.state.currentPlayerIdx ? this.state.selectedPiece : null}
-              rotate={this.rotate.bind(this)}
-              flip={this.flip.bind(this)}
-              piecePlaced={this.piecePlaced.bind(this)} />
+          {this.state.players.map((player, idx)=> {
+            const isCurrentPlayerBoard = idx === this.state.currentPlayerIdx
+            return (
+              <Board key={idx}
+                board={player.board}
+                buttons={player.buttons}
+                hasSevenBySeven={player.hasSevenBySeven}
+                finalScore={player.finalScore}
+                current={isCurrentPlayerBoard}
+                piece={isCurrentPlayerBoard ? this.state.selectedPiece : null}
+                rotate={this.rotate.bind(this)}
+                flip={this.flip.bind(this)}
+                piecePlaced={this.piecePlaced.bind(this)} />
+            )
+          }
           )}
         </div>
         {this.state.gameFinished ? null :

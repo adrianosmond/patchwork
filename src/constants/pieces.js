@@ -259,4 +259,6 @@ pieces.push(makePiece({
   costTime: 1,
 }))
 
-export default pieces
+const PATCH_INDEX = pieces.length + 1
+
+export { pieces, PATCH_INDEX }
