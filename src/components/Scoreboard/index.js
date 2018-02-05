@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 
 import {BUTTONS_AFTER, PATCHES_AFTER} from '../../constants/scoreboard'
 import {TILE_SIZE} from '../../constants/board'
+import {interpolate} from '../../constants/utils'
 
 import './index.css'
 
@@ -17,7 +18,8 @@ class Scoreboard extends Component {
 
   componentDidUpdate() {
     const lastPlace = Math.min(...this.state.players.map(p => p.position))
-    this.trackEl.scrollLeft = Math.max(0, TILE_SIZE * (lastPlace - 1));
+    interpolate(this.trackEl.scrollLeft, Math.max(0, TILE_SIZE * (lastPlace - 1)), val => {this.trackEl.scrollLeft = val});
+    // this.trackEl.scrollLeft = Math.max(0, TILE_SIZE * (lastPlace - 1));
   }
 
   render() {

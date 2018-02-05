@@ -21,4 +21,25 @@ const flipShape = (shape) => {
   return newShape.reverse()
 }
 
-export { rotateShape, flipShape }
+const interpolate = (from, to, cb, duration = 500) => {
+  const difference = to - from;
+  const start = new Date().getTime()
+  const easing = (t) =>
+    t < 0.5
+    ? 2 * t * t
+    : -1 + (4 - 2 * t) * t;
+
+  const frame = () => {
+    const now = new Date().getTime()
+    const percentage = Math.min(1, (now - start) / duration);
+    const easedValue = easing( percentage ) * difference;
+    cb(easedValue);
+    if (percentage < 1) {
+      requestAnimationFrame(frame);
+    }
+  }
+
+  requestAnimationFrame(frame);
+}
+
+export { rotateShape, flipShape, interpolate }
