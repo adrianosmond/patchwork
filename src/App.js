@@ -3,8 +3,9 @@ import React, { Component } from 'react'
 import Scoreboard from './components/Scoreboard'
 import Board from './components/Board'
 import Track from './components/Track'
+import Instructions from './components/Instructions'
 
-import { rotateShape, flipShape } from './constants/utils'
+// import { rotateShape, flipShape } from './constants/utils'
 import { pieces, PATCH_INDEX } from './constants/pieces'
 import { SCOREBOARD_LENGTH, BUTTONS_AFTER, PATCHES_AFTER } from './constants/scoreboard'
 import { INITIAL_PLAYER_STATE } from './constants/players'
@@ -46,25 +47,6 @@ class App extends Component {
 
   makeButtons() {
     this.updatePlayerState(MOVE_TYPE_BUTTON)
-  }
-
-  rotate() {
-    this.transformShape(rotateShape)
-  }
-
-  flip() {
-    this.transformShape(flipShape)
-  }
-
-  transformShape(transformFunc) {
-    if (!this.state.selectedPiece) return
-
-    this.setState({
-      selectedPiece: {
-        ...this.state.selectedPiece,
-        shape: transformFunc(this.state.selectedPiece.shape)
-      }
-    })
   }
 
   selectPiece(selectedPieceIndex) {
@@ -246,9 +228,9 @@ class App extends Component {
   }
 
   render() {
-    const currentPlayer = this.getCurrentPlayer()
     return (
       <div className="App">
+        <Instructions />
         <Scoreboard players={this.state.players}
           currentPlayerIdx={this.state.currentPlayerIdx} />
         <div style={{
@@ -260,14 +242,12 @@ class App extends Component {
             return (
               <Board key={idx}
                 board={player.board}
-                buttons={player.buttons}
-                hasSevenBySeven={player.hasSevenBySeven}
-                finalScore={this.state.gameFinished ? player.score : null}
                 current={isCurrentPlayerBoard}
                 piece={isCurrentPlayerBoard ? this.state.selectedPiece : null}
-                rotate={this.rotate.bind(this)}
-                flip={this.flip.bind(this)}
-                piecePlaced={this.piecePlaced.bind(this)} />
+                piecePlaced={this.piecePlaced.bind(this)}
+                buttons={player.buttons}
+                hasSevenBySeven={player.hasSevenBySeven}
+                finalScore={this.state.gameFinished ? player.score : null} />
             )
           }
           )}
@@ -277,8 +257,9 @@ class App extends Component {
             placingPatch={this.state.selectedPieceIndex === PATCH_INDEX}
             selectPiece={this.selectPiece.bind(this)}
             makeButtons={this.makeButtons.bind(this)}
-            maxCost={currentPlayer.buttons} />
+            maxCost={this.getCurrentPlayer().buttons} />
         }
+
       </div>
     )
   }

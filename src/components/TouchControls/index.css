@@ -1,0 +1,69 @@
+:root {
+  --touch-button-size: 48px;
+}
+
+.touch-controls {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  transform: translateX(calc(var(--touch-button-size) * 4)) translateY(calc(var(--touch-button-size) * 2));
+  transition: transform 0.3s;
+}
+
+.touch-controls--visible {
+  transform: none;
+}
+
+.touch-controls__button {
+  width: var(--touch-button-size);
+  height: var(--touch-button-size);
+  font-size: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  background-size: 100% 100%;
+}
+
+.touch-controls__keyboard {
+  display: grid;
+  width: calc(var(--touch-button-size) * 4);
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+
+.touch-controls__button--toggle-keyboard {
+  margin-left: calc(var(--touch-button-size) * -1);
+}
+
+.touch-controls__button--place {
+  height: calc(var(--touch-button-size) * 2);
+  grid-column-start: 4;
+  grid-row-start: 1;
+  grid-row-end: 3;
+}
+
+.touch-controls__button--up {
+  grid-column-start: 2;
+}
+
+.touch-controls__button--down {
+  grid-column-start: 2;
+}
+
+.touch-controls__button--left {
+  grid-column-start: 1;
+  grid-row-start: 2;
+}
+
+.touch-controls__button--right {
+  grid-column-start: 3;
+  grid-row-start: 2;
+}
+
+.touch-controls__button--flip {
+  grid-column-start: 1;
+  grid-row-start: 1;
+}
+
+.touch-controls__button--rotate {
+  grid-column-start: 3;
+  grid-row-start: 1;
+}

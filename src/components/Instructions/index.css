@@ -1,0 +1,37 @@
+.instructions::before {
+  content: "";
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.75);
+}
+
+.instructions__modal {
+  position: fixed;
+  z-index: 2;
+  width: 80vw;
+  max-width: 650px;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background-color: #fff;
+  padding: 2rem;
+}
+
+.instructions__modal-heading {
+  margin-top: 0;
+}
+
+.instructions__modal-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.instructions__modal-button {
+  padding: 0.5rem;
+  font: inherit;
+}

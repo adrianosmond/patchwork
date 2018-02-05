@@ -15,6 +15,7 @@
 .track__piece {
   position: relative;
   margin-left: var(--square-size);
+  cursor: pointer;
 }
 
 .track__piece:first-child {
@@ -24,6 +25,7 @@
 .track__piece--not-selectable {
   filter: grayscale(0.75);
   opacity: 0.3;
+  pointer-events: none;
 }
 
 .track__costs {
