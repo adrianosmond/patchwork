@@ -32,7 +32,7 @@ const interpolate = (from, to, cb, duration = 500) => {
   const frame = () => {
     const now = new Date().getTime()
     const percentage = Math.min(1, (now - start) / duration);
-    const easedValue = easing( percentage ) * difference;
+    const easedValue = from + (easing( percentage ) * difference);
     cb(easedValue);
     if (percentage < 1) {
       requestAnimationFrame(frame);

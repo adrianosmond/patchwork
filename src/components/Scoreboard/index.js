@@ -12,14 +12,19 @@ class Scoreboard extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      players: props.players
+      players: props.players,
+      lastPlace: 0
     }
   }
 
   componentDidUpdate() {
     const lastPlace = Math.min(...this.state.players.map(p => p.position))
-    interpolate(this.trackEl.scrollLeft, Math.max(0, TILE_SIZE * (lastPlace - 1)), val => {this.trackEl.scrollLeft = val});
-    // this.trackEl.scrollLeft = Math.max(0, TILE_SIZE * (lastPlace - 1));
+    if (lastPlace !== this.state.lastPlace) {
+      interpolate(this.trackEl.scrollLeft, Math.max(0, TILE_SIZE * (lastPlace - 1)), val => {this.trackEl.scrollLeft = val});
+      this.setState({
+        lastPlace
+      })
+    }
   }
 
   render() {
