@@ -20,8 +20,8 @@ const WON_PATCH = {
     colour: 'var(--patch-colour)'
   }
 }
-const MOVE_TYPE_PIECE = 0;
-const MOVE_TYPE_BUTTON = 1;
+const MOVE_TYPE_PIECE = 0
+const MOVE_TYPE_BUTTON = 1
 
 class App extends Component {
   constructor(props) {
@@ -40,34 +40,12 @@ class App extends Component {
     }
   }
 
-  componentDidUpdate() {
-    if (!this.state.gameFinished &&
-        this.state.players[0].position === SCOREBOARD_LENGTH &&
-        this.state.players[1].position === SCOREBOARD_LENGTH) {
-      let newPlayers = this.makePlayerArrayClone()
-
-      newPlayers.forEach((player) => {
-        const negatives = player.board.reduce((total, currentRow) =>
-          total + currentRow.reduce((t, c) =>
-            t + (c === false ? -2 : 0)
-          , 0)
-        , 0)
-        player.finalScore = negatives + player.buttons + (player.hasSevenBySeven ? 7 : 0);
-      })
-
-      this.setState({
-        gameFinished: true,
-        players: newPlayers
-      })
-    }
-  }
-
   piecePlaced(newBoard) {
-    this.updatePlayerState(MOVE_TYPE_PIECE, newBoard);
+    this.updatePlayerState(MOVE_TYPE_PIECE, newBoard)
   }
 
   makeButtons() {
-    this.updatePlayerState(MOVE_TYPE_BUTTON);
+    this.updatePlayerState(MOVE_TYPE_BUTTON)
   }
 
   rotate() {
@@ -125,17 +103,20 @@ class App extends Component {
       player.buttons = this.calculateNewButtons(MOVE_TYPE_BUTTON, player.position, player.board)
     }
 
+    player.score = this.calculateNewScore(player)
+
     this.setState({
       players: newPlayers
     })
 
     this.checkIfPlayerPassedPatch(prevPosition, player, this.getOpponent())
+    this.checkForGameEnd(newPlayers)
   }
 
   calculateNewPosition(moveType) {
     let player = this.getCurrentPlayer()
     let opponent = this.getOpponent()
-    let newPosition = 0;
+    let newPosition = 0
     if (moveType === MOVE_TYPE_PIECE) {
       const {selectedPiece} = this.state
       newPosition = player.position + selectedPiece.costTime
@@ -148,14 +129,14 @@ class App extends Component {
 
   calculateNewButtons(moveType, newPosition, playerBoard, selectedPiece = null) {
     let player = this.getCurrentPlayer()
-    let newButtons = player.buttons;
+    let newButtons = player.buttons
     if (moveType === MOVE_TYPE_PIECE) {
       newButtons -= selectedPiece.costButtons
     } else {
       newButtons += newPosition - player.position
     }
     newButtons += this.buttonsEarned(player.position, newPosition, playerBoard)
-    return newButtons;
+    return newButtons
   }
 
   updatePiecesTrack() {
@@ -213,7 +194,7 @@ class App extends Component {
   }
 
   checkSevenBySeven(player) {
-    if (this.state.sevenBySevenWon) return player.hasSevenBySeven;
+    if (this.state.sevenBySevenWon) return player.hasSevenBySeven
 
     if (this.hasSevenBySeven(player.board)) {
       this.setState({
@@ -238,15 +219,34 @@ class App extends Component {
     for (let i=0; i<7; i++) {
       for (let j=0; j<7; j++) {
         if (board[row+i][col+j] === false) {
-          return false;
+          return false
         }
       }
     }
-    return true;
+    return true
+  }
+
+  calculateNewScore(player) {
+    const negatives = player.board.reduce((total, currentRow) =>
+      total + currentRow.reduce((t, c) =>
+        t + (c === false ? -2 : 0)
+      , 0)
+    , 0)
+    return negatives + player.buttons + (player.hasSevenBySeven ? 7 : 0)
+  }
+
+  checkForGameEnd(players) {
+    if (!this.state.gameFinished &&
+        players[0].position === SCOREBOARD_LENGTH &&
+        players[1].position === SCOREBOARD_LENGTH) {
+      this.setState({
+        gameFinished: true
+      })
+    }
   }
 
   render() {
-    const currentPlayer = this.getCurrentPlayer();
+    const currentPlayer = this.getCurrentPlayer()
     return (
       <div className="App">
         <Scoreboard players={this.state.players}
@@ -262,7 +262,7 @@ class App extends Component {
                 board={player.board}
                 buttons={player.buttons}
                 hasSevenBySeven={player.hasSevenBySeven}
-                finalScore={player.finalScore}
+                finalScore={this.state.gameFinished ? player.score : null}
                 current={isCurrentPlayerBoard}
                 piece={isCurrentPlayerBoard ? this.state.selectedPiece : null}
                 rotate={this.rotate.bind(this)}
