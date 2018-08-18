@@ -1,34 +1,34 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import './index.css'
+import './Instructions.css';
 
-const NEVER_SHOW_KEY = 'NEVER_SHOW_MODAL'
+const NEVER_SHOW_KEY = 'NEVER_SHOW_MODAL';
 
 class Instructions extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      hide: false
-    }
+      hide: false,
+    };
   }
 
   componentWillMount() {
-    const hide = !!localStorage.getItem(NEVER_SHOW_KEY) || !!sessionStorage.getItem(NEVER_SHOW_KEY)
+    const hide = !!localStorage.getItem(NEVER_SHOW_KEY) || !!sessionStorage.getItem(NEVER_SHOW_KEY);
     this.setState({
-      hide
-    })
+      hide,
+    });
   }
 
   closeModal() {
     this.setState({
-      hide: true
-    })
+      hide: true,
+    });
 
     const neverShow = this.neverShowCheckbox.checked;
     if (neverShow) {
-      localStorage.setItem(NEVER_SHOW_KEY, true)
+      localStorage.setItem(NEVER_SHOW_KEY, true);
     } else {
-      sessionStorage.setItem(NEVER_SHOW_KEY, true)
+      sessionStorage.setItem(NEVER_SHOW_KEY, true);
     }
   }
 
@@ -55,13 +55,13 @@ class Instructions extends Component {
           <p>If you're using a tablet, you can bring up touch screen controls to use
             instead of a keyboard by tapping the button in the bottom right corner</p>
           <div className="instructions__modal-controls">
-            <label><input type="checkbox" ref={(el)=>{this.neverShowCheckbox = el}} />Don't show me this again</label>
+            <label><input type="checkbox" ref={(el) => { this.neverShowCheckbox = el; }} />Don't show me this again</label>
             <button className="instructions__modal-button" onClick={this.closeModal.bind(this)}>Got it!</button>
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default Instructions
+export default Instructions;

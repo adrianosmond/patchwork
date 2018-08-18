@@ -1,13 +1,13 @@
 const BOARD_SIZE = 9;
 const TILE_SIZE = 32;
 
-let board = []
-for (let i=0; i<BOARD_SIZE; i++) {
-  let row = []
-  for (let j=0; j<BOARD_SIZE; j++) {
-    row.push(false)
+const board = [];
+for (let i = 0; i < BOARD_SIZE; i += 1) {
+  const row = [];
+  for (let j = 0; j < BOARD_SIZE; j += 1) {
+    row.push(false);
   }
-  board.push(row)
+  board.push(row);
 }
 
-export { BOARD_SIZE, TILE_SIZE, board }
+export { BOARD_SIZE, TILE_SIZE, board };

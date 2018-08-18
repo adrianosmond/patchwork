@@ -1,11 +1,11 @@
-import React from 'react'
+import React from 'react';
 
-import Piece from '../Piece'
+import Piece from 'components/Piece';
 
-import './index.css'
+import './Track.css';
 
 const Track = (props) => {
-  if (!props.pieces) return null
+  if (!props.pieces) return null;
   return (
     <div className="track">
       <div>
@@ -27,10 +27,10 @@ const Track = (props) => {
             </div>
             <Piece piece={piece} />
           </div>
-        )
+        );
       })}
     </div>
-  )
-}
+  );
+};
 
 export default Track;
