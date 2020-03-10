@@ -8,7 +8,7 @@ const gatherCol = (shape, col) => {
   return newRow;
 };
 
-const rotateShape = (shape) => {
+const rotateShape = shape => {
   const newShape = [];
   const newRows = shape[0].length;
 
@@ -18,7 +18,7 @@ const rotateShape = (shape) => {
   return newShape;
 };
 
-const flipShape = (shape) => {
+const flipShape = shape => {
   const newShape = shape.map(row => row.slice());
   return newShape.reverse();
 };
@@ -26,15 +26,12 @@ const flipShape = (shape) => {
 const interpolate = (from, to, callback, duration = 500) => {
   const difference = to - from;
   const start = new Date().getTime();
-  const easing = t =>
-    (t < 0.5
-      ? 2 * t * t
-      : -1 + ((4 - (2 * t)) * t));
+  const easing = t => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
 
   const frame = () => {
     const now = new Date().getTime();
     const percentage = Math.min(1, (now - start) / duration);
-    const easedValue = from + (easing(percentage) * difference);
+    const easedValue = from + easing(percentage) * difference;
     callback(easedValue);
     if (percentage < 1) {
       requestAnimationFrame(frame);
@@ -55,37 +52,33 @@ const checkBoard = (board, row, col) => {
   return true;
 };
 
-const calculateNewScore = (player) => {
+const calculateNewScore = player => {
   const negatives = player.board.reduce(
     (total, currentRow) =>
-      total + currentRow.reduce(
-        (t, c) =>
-          t + (c === false ? -2 : 0)
-        , 0,
-      )
-    , 0,
+      total + currentRow.reduce((t, c) => t + (c === false ? -2 : 0), 0),
+    0,
   );
   return negatives + player.buttons + (player.hasSevenBySeven ? 7 : 0);
 };
-
 
 const buttonsEarned = (prevPosition, currentPosition, board) => {
   const nextButton = BUTTONS_AFTER.find(el => el >= prevPosition);
   if (nextButton < currentPosition) {
     return board.reduce(
       (total, currentRow) =>
-        total + currentRow.reduce(
-          (t, c) =>
-            t + (c !== false ? c.value - 1 : 0)
-          , 0,
-        )
-      , 0,
+        total +
+        currentRow.reduce((t, c) => t + (c !== false ? c.value - 1 : 0), 0),
+      0,
     );
   }
   return 0;
 };
 
-const didPlayerPassPatch = (prevPosition, currentPosition, opponentPosition) => {
+const didPlayerPassPatch = (
+  prevPosition,
+  currentPosition,
+  opponentPosition,
+) => {
   const nextPatch = PATCHES_AFTER.find(el => el >= prevPosition);
   if (nextPatch < opponentPosition) return false;
   else if (nextPatch < currentPosition) return true;

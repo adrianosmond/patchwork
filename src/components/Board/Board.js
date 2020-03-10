@@ -19,27 +19,27 @@ class Board extends Component {
     this.boundKeyListener = null;
   }
 
-  componentWillReceiveProps(newProps) {
-    const { piece } = newProps;
-    if (piece !== this.state.piece) {
+  componentDidUpdate(prevProps) {
+    const { piece } = this.props;
+    if (piece !== prevProps.piece && piece !== this.state.piece) {
       this.setState({
         piece,
       });
-      if (piece) this.keepPieceInBoard(newProps.piece);
+      if (piece) this.keepPieceInBoard(piece);
     }
   }
 
   componentDidMount() {
-    this.boundKeyListener = window.addEventListener('keydown', this.keyListener.bind(this));
+    window.addEventListener('keydown', this.keyListener);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.boundKeyListener);
+    window.removeEventListener('keydown', this.keyListener);
   }
 
-  keyListener(event) {
-    // ENTER
+  keyListener = event => {
     if (event.keyCode === 13) {
+      // ENTER
       event.preventDefault();
       this.placePiece();
     } else if (event.keyCode === 32) {
@@ -67,56 +67,7 @@ class Board extends Component {
       event.preventDefault();
       this.movePieceDown();
     }
-  }
-
-  movePieceUp() {
-    if (!this.state.piece) return;
-    const { pieceTop } = this.state;
-    if (pieceTop <= 0) return;
-    this.setState({
-      pieceTop: pieceTop - 1,
-    });
-  }
-
-  movePieceDown() {
-    if (!this.state.piece) return;
-    const { pieceTop } = this.state;
-    const pieceHeight = this.state.piece.shape.length;
-    if (pieceTop + pieceHeight === BOARD_SIZE) return;
-    this.setState({
-      pieceTop: pieceTop + 1,
-    });
-  }
-
-  movePieceLeft() {
-    if (!this.state.piece) return;
-    const { pieceLeft } = this.state;
-    if (pieceLeft <= 0) return;
-    this.setState({
-      pieceLeft: pieceLeft - 1,
-    });
-  }
-
-  movePieceRight() {
-    if (!this.state.piece) return;
-    const { pieceLeft } = this.state;
-    const pieceWidth = this.state.piece.shape[0].length;
-    if (pieceLeft + pieceWidth === BOARD_SIZE) return;
-    this.setState({
-      pieceLeft: pieceLeft + 1,
-    });
-  }
-
-  rotate() {
-    if (!this.state.piece) return;
-    this.transformShape(rotateShape);
-    this.keepPieceInBoard(this.state.piece);
-  }
-
-  flip() {
-    if (!this.state.piece) return;
-    this.transformShape(flipShape);
-  }
+  };
 
   transformShape(transformFunc) {
     this.setState({
@@ -127,7 +78,56 @@ class Board extends Component {
     });
   }
 
-  placePiece() {
+  movePieceUp = () => {
+    if (!this.state.piece) return;
+    const { pieceTop } = this.state;
+    if (pieceTop <= 0) return;
+    this.setState({
+      pieceTop: pieceTop - 1,
+    });
+  };
+
+  movePieceDown = () => {
+    if (!this.state.piece) return;
+    const { pieceTop } = this.state;
+    const pieceHeight = this.state.piece.shape.length;
+    if (pieceTop + pieceHeight === BOARD_SIZE) return;
+    this.setState({
+      pieceTop: pieceTop + 1,
+    });
+  };
+
+  movePieceLeft = () => {
+    if (!this.state.piece) return;
+    const { pieceLeft } = this.state;
+    if (pieceLeft <= 0) return;
+    this.setState({
+      pieceLeft: pieceLeft - 1,
+    });
+  };
+
+  movePieceRight = () => {
+    if (!this.state.piece) return;
+    const { pieceLeft } = this.state;
+    const pieceWidth = this.state.piece.shape[0].length;
+    if (pieceLeft + pieceWidth === BOARD_SIZE) return;
+    this.setState({
+      pieceLeft: pieceLeft + 1,
+    });
+  };
+
+  rotate = () => {
+    if (!this.state.piece) return;
+    this.transformShape(rotateShape);
+    this.keepPieceInBoard(this.state.piece);
+  };
+
+  flip = () => {
+    if (!this.state.piece) return;
+    this.transformShape(flipShape);
+  };
+
+  placePiece = () => {
     if (!this.state.piece) return;
     const { pieceTop, pieceLeft } = this.state;
     const { board } = this.props;
@@ -156,7 +156,7 @@ class Board extends Component {
     });
 
     this.props.piecePlaced(newBoard);
-  }
+  };
 
   keepPieceInBoard(piece) {
     const { pieceTop, pieceLeft } = this.state;
@@ -178,42 +178,55 @@ class Board extends Component {
     const { board } = this.props;
     const { piece, pieceTop, pieceLeft } = this.state;
     return (
-      <div className={`board ${this.props.current || this.props.finalScore ? 'board--current' : ''}`}>
-        {board.map((row, ridx) =>
+      <div
+        className={`board ${
+          this.props.current || this.props.finalScore ? 'board--current' : ''
+        }`}
+      >
+        {board.map((row, ridx) => (
           <div className="board__row" key={ridx}>
-            {row.map((col, cidx) =>
-              <div className={`board__cell ${col ? 'board__cell--full' : 'board__cell--empty'} ${col && col.value > 1 ? 'board__cell--has-button' : ''}`}
-                style={
-                  col ? { backgroundColor: col.colour } : null
-                }
-                key={cidx}>&nbsp;</div>)}
-          </div>)}
-        {piece ?
-          <div className="board__piece" style={{
-            left: `${pieceLeft * TILE_SIZE}px`,
-            top: `${pieceTop * TILE_SIZE}px`,
-          }}>
+            {row.map((col, cidx) => (
+              <div
+                className={`board__cell ${
+                  col ? 'board__cell--full' : 'board__cell--empty'
+                } ${col && col.value > 1 ? 'board__cell--has-button' : ''}`}
+                style={col ? { backgroundColor: col.colour } : null}
+                key={cidx}
+              >
+                &nbsp;
+              </div>
+            ))}
+          </div>
+        ))}
+        {piece ? (
+          <div
+            className="board__piece"
+            style={{
+              left: `${pieceLeft * TILE_SIZE}px`,
+              top: `${pieceTop * TILE_SIZE}px`,
+            }}
+          >
             <Piece piece={piece} />
           </div>
-        : null}
+        ) : null}
         <div className="board__buttons">{this.props.buttons}</div>
-        {this.props.hasSevenBySeven ?
+        {this.props.hasSevenBySeven ? (
           <div className="board__seven-by-seven">7x7</div>
-          : null}
-        {this.props.finalScore ?
+        ) : null}
+        {this.props.finalScore ? (
           <div className="board__final-score">{this.props.finalScore}</div>
-          : null}
-        {this.props.current ?
+        ) : null}
+        {this.props.current ? (
           <TouchControls
-            up={this.movePieceUp.bind(this)}
-            down={this.movePieceDown.bind(this)}
-            left={this.movePieceLeft.bind(this)}
-            right={this.movePieceRight.bind(this)}
-            flip={this.flip.bind(this)}
-            rotate={this.rotate.bind(this)}
-            place={this.placePiece.bind(this)} />
-          : null
-        }
+            up={this.movePieceUp}
+            down={this.movePieceDown}
+            left={this.movePieceLeft}
+            right={this.movePieceRight}
+            flip={this.flip}
+            rotate={this.rotate}
+            place={this.placePiece}
+          />
+        ) : null}
       </div>
     );
   }
