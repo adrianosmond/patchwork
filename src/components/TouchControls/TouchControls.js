@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import classnames from 'classnames';
+
+import TouchControlButton from 'components/TouchControlButton';
 
 import './TouchControls.css';
 import touchImg from './touch.png';
@@ -21,8 +24,15 @@ class TouchControls extends Component {
   }
 
   componentDidMount() {
+    let showKeyboard;
+    try {
+      showKeyboard = JSON.parse(sessionStorage.getItem(SHOW_KEYBOARD_KEY));
+    } catch (e) {
+      showKeyboard = false;
+    }
+
     this.setState({
-      showKeyboard: sessionStorage.getItem(SHOW_KEYBOARD_KEY),
+      showKeyboard,
     });
   }
 
@@ -35,85 +45,59 @@ class TouchControls extends Component {
   };
 
   render() {
+    const { up, down, left, right, flip, rotate, place } = this.props;
+    const { showKeyboard } = this.state;
     return (
       <div
-        className={`touch-controls ${
-          this.state.showKeyboard ? 'touch-controls--visible' : ''
-        }`}
+        className={classnames({
+          'touch-controls': true,
+          'touch-controls--visible': showKeyboard,
+        })}
       >
-        <button
-          className="touch-controls__button touch-controls__button--toggle-keyboard"
-          style={{
-            backgroundImage: `url(${touchImg})`,
-          }}
+        <TouchControlButton
+          name="toggle-keyboard"
+          img={touchImg}
           onClick={this.toggleKeyboard}
-        >
-          Toggle keyboard
-        </button>
+          title="Toggle keyboard"
+        />
         <div className="touch-controls__keyboard">
-          <button
-            className="touch-controls__button touch-controls__button--up"
-            style={{
-              backgroundImage: `url(${upImg})`,
-            }}
-            onClick={this.props.up}
-          >
-            Up
-          </button>
-          <button
-            className="touch-controls__button touch-controls__button--down"
-            style={{
-              backgroundImage: `url(${downImg})`,
-            }}
-            onClick={this.props.down}
-          >
-            Down
-          </button>
-          <button
-            className="touch-controls__button touch-controls__button--left"
-            style={{
-              backgroundImage: `url(${leftImg})`,
-            }}
-            onClick={this.props.left}
-          >
-            Left
-          </button>
-          <button
-            className="touch-controls__button touch-controls__button--right"
-            style={{
-              backgroundImage: `url(${rightImg})`,
-            }}
-            onClick={this.props.right}
-          >
-            Right
-          </button>
-          <button
-            className="touch-controls__button touch-controls__button--flip"
-            style={{
-              backgroundImage: `url(${rotateImg})`,
-            }}
-            onClick={this.props.rotate}
-          >
-            Rotate
-          </button>
-          <button
-            className="touch-controls__button touch-controls__button--rotate"
-            style={{
-              backgroundImage: `url(${flipImg})`,
-            }}
-            onClick={this.props.flip}
-          >
-            Flip
-          </button>
-          <button
-            className="touch-controls__button touch-controls__button--place"
-            style={{
-              backgroundImage: `url(${placeImg})`,
-            }}
-            onClick={this.props.place}
-          >
-            Place
-          </button>
+          <TouchControlButton name="up" img={upImg} onClick={up} title="Up" />
+          <TouchControlButton
+            name="down"
+            img={downImg}
+            onClick={down}
+            title="Down"
+          />
+          <TouchControlButton
+            name="left"
+            img={leftImg}
+            onClick={left}
+            title="Left"
+          />
+          <TouchControlButton
+            name="right"
+            img={rightImg}
+            onClick={right}
+            title="Right"
+          />
+          <TouchControlButton
+            name="flip"
+            img={rotateImg}
+            onClick={rotate}
+            title="Rotate"
+          />
+          <TouchControlButton
+            name="rotate"
+            img={flipImg}
+            onClick={flip}
+            title="Flip"
+          />
+          <TouchControlButton
+            name="place"
+            img={placeImg}
+            onClick={place}
+            title="Place"
+          />
         </div>
       </div>
     );

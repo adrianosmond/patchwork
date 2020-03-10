@@ -1,4 +1,9 @@
-import { BUTTONS_AFTER, PATCHES_AFTER } from 'constants/scoreboard';
+import {
+  BUTTONS_AFTER,
+  PATCHES_AFTER,
+  SCOREBOARD_LENGTH,
+} from 'constants/scoreboard';
+import { MOVE_TYPES } from 'constants/game';
 
 const gatherCol = (shape, col) => {
   const newRow = [];
@@ -74,6 +79,45 @@ const buttonsEarned = (prevPosition, currentPosition, board) => {
   return 0;
 };
 
+const hasSevenBySeven = board => {
+  for (let i = 0; i <= 2; i += 1) {
+    for (let j = 0; j <= 2; j += 1) {
+      if (checkBoard(board, i, j)) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+const calculateNewButtons = (
+  player,
+  moveType,
+  newPosition,
+  playerBoard,
+  selectedPiece = null,
+) => {
+  let newButtons = player.buttons;
+  if (moveType === MOVE_TYPES.PIECE) {
+    newButtons -= selectedPiece.costButtons;
+  } else {
+    newButtons += newPosition - player.position;
+  }
+  newButtons += buttonsEarned(player.position, newPosition, playerBoard);
+  return newButtons;
+};
+
+const calculateNewPosition = (moveType, player, opponent, selectedPiece) => {
+  let newPosition = 0;
+  if (moveType === MOVE_TYPES.PIECE) {
+    newPosition = player.position + selectedPiece.costTime;
+  } else {
+    newPosition = opponent.position + 1;
+  }
+  if (newPosition > SCOREBOARD_LENGTH) newPosition = SCOREBOARD_LENGTH;
+  return newPosition;
+};
+
 const didPlayerPassPatch = (
   prevPosition,
   currentPosition,
@@ -81,7 +125,7 @@ const didPlayerPassPatch = (
 ) => {
   const nextPatch = PATCHES_AFTER.find(el => el >= prevPosition);
   if (nextPatch < opponentPosition) return false;
-  else if (nextPatch < currentPosition) return true;
+  if (nextPatch < currentPosition) return true;
   return false;
 };
 
@@ -91,6 +135,9 @@ export {
   interpolate,
   checkBoard,
   calculateNewScore,
+  calculateNewButtons,
+  calculateNewPosition,
   buttonsEarned,
   didPlayerPassPatch,
+  hasSevenBySeven,
 };

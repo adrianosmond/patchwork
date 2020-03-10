@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
+import classnames from 'classnames';
 
-import { BUTTONS_AFTER, PATCHES_AFTER } from 'constants/scoreboard';
+import {
+  BUTTONS_AFTER,
+  PATCHES_AFTER,
+  SCOREBOARD_LENGTH,
+} from 'constants/scoreboard';
 import { TILE_SIZE } from 'constants/board';
 import { interpolate } from 'constants/utils';
 
 import './Scoreboard.css';
 
-const track = Array(...Array(54));
+const track = Array(...Array(SCOREBOARD_LENGTH + 1));
 
 class Scoreboard extends Component {
   constructor(props) {
@@ -33,7 +38,8 @@ class Scoreboard extends Component {
   }
 
   render() {
-    const farthest = Math.max(...this.props.players.map(p => p.position));
+    const { players, currentPlayerIdx } = this.props;
+    const farthest = Math.max(...players.map(p => p.position));
     return (
       <div className="scoreboard">
         <div
@@ -45,35 +51,29 @@ class Scoreboard extends Component {
           {track.map((cell, idx) => (
             <div
               key={idx}
-              className={`scoreboard__cell ${
-                BUTTONS_AFTER.indexOf(idx) >= 0
-                  ? 'scoreboard__cell--button-after'
-                  : ''
-              } ${
-                PATCHES_AFTER.indexOf(idx) >= 0
-                  ? 'scoreboard__cell--patch-after'
-                  : ''
-              } ${
-                PATCHES_AFTER.indexOf(idx) >= 0 && idx < farthest
-                  ? 'scoreboard__cell--patch-taken'
-                  : ''
-              }`}
+              className={classnames({
+                scoreboard__cell: true,
+                'scoreboard__cell--button-after': BUTTONS_AFTER.includes(idx),
+                'scoreboard__cell--patch-after': PATCHES_AFTER.includes(idx),
+                'scoreboard__cell--patch-taken':
+                  PATCHES_AFTER.includes(idx) && idx < farthest,
+              })}
             >
-              {this.props.players.map((player, pidx) => {
-                if (player.position === idx) {
-                  return (
-                    <div
-                      key={pidx}
-                      className={`scoreboard__player scoreboard__player--${pidx +
-                        1} ${
-                        pidx === this.props.currentPlayerIdx
-                          ? 'scoreboard__player--current'
-                          : ''
-                      }`}
-                    />
-                  );
+              {players.map((player, playerIdx) => {
+                if (player.position !== idx) {
+                  return null;
                 }
-                return null;
+                const isCurrentPlayer = playerIdx === currentPlayerIdx;
+                return (
+                  <div
+                    key={playerIdx}
+                    className={classnames({
+                      scoreboard__player: true,
+                      'scoreboard__player--current': isCurrentPlayer,
+                      [`scoreboard__player--${playerIdx + 1}`]: true,
+                    })}
+                  />
+                );
               })}
             </div>
           ))}

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classnames from 'classnames';
 
 import Piece from 'components/Piece';
 import TouchControls from 'components/TouchControls';
@@ -138,14 +139,15 @@ class Board extends Component {
 
     for (let i = 0; i < pieceHeight; i += 1) {
       for (let j = 0; j < pieceWidth; j += 1) {
-        if (shape[i][j] === 0) continue;
-        if (board[pieceTop + i][pieceLeft + j] !== false) {
-          return;
+        if (shape[i][j] !== 0) {
+          if (board[pieceTop + i][pieceLeft + j] !== false) {
+            return;
+          }
+          newBoard[pieceTop + i][pieceLeft + j] = {
+            value: shape[i][j],
+            colour,
+          };
         }
-        newBoard[pieceTop + i][pieceLeft + j] = {
-          value: shape[i][j],
-          colour,
-        };
       }
     }
 
@@ -175,30 +177,35 @@ class Board extends Component {
   }
 
   render() {
-    const { board } = this.props;
+    const { board, current, finalScore, buttons, hasSevenBySeven } = this.props;
     const { piece, pieceTop, pieceLeft } = this.state;
     return (
       <div
-        className={`board ${
-          this.props.current || this.props.finalScore ? 'board--current' : ''
-        }`}
+        className={classnames({
+          board: true,
+          'board--current': current || finalScore,
+        })}
       >
-        {board.map((row, ridx) => (
-          <div className="board__row" key={ridx}>
-            {row.map((col, cidx) => (
+        {board.map((row, rowIdx) => (
+          <div className="board__row" key={rowIdx}>
+            {row.map((col, colIdx) => (
               <div
-                className={`board__cell ${
-                  col ? 'board__cell--full' : 'board__cell--empty'
-                } ${col && col.value > 1 ? 'board__cell--has-button' : ''}`}
+                className={classnames({
+                  board__cell: true,
+                  'board__cell--empty': !col,
+                  'board__cell--full': col,
+                  'board__cell--has-button': col && col.value > 1,
+                })}
                 style={col ? { backgroundColor: col.colour } : null}
-                key={cidx}
+                key={colIdx}
               >
                 &nbsp;
               </div>
             ))}
           </div>
         ))}
-        {piece ? (
+
+        {piece && (
           <div
             className="board__piece"
             style={{
@@ -208,15 +215,15 @@ class Board extends Component {
           >
             <Piece piece={piece} />
           </div>
-        ) : null}
-        <div className="board__buttons">{this.props.buttons}</div>
-        {this.props.hasSevenBySeven ? (
-          <div className="board__seven-by-seven">7x7</div>
-        ) : null}
-        {this.props.finalScore ? (
-          <div className="board__final-score">{this.props.finalScore}</div>
-        ) : null}
-        {this.props.current ? (
+        )}
+
+        <div className="board__buttons">{buttons}</div>
+
+        {hasSevenBySeven && <div className="board__seven-by-seven">7x7</div>}
+
+        {finalScore && <div className="board__final-score">{finalScore}</div>}
+
+        {current && (
           <TouchControls
             up={this.movePieceUp}
             down={this.movePieceDown}
@@ -226,7 +233,7 @@ class Board extends Component {
             rotate={this.rotate}
             place={this.placePiece}
           />
-        ) : null}
+        )}
       </div>
     );
   }

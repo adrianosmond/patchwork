@@ -1,6 +1,6 @@
 import { board } from './board';
 
-const INITIAL_PLAYER_STATE = {
+export const INITIAL_PLAYER_STATE = {
   position: 0,
   buttons: 5,
   hasSevenBySeven: false,
@@ -8,4 +8,7 @@ const INITIAL_PLAYER_STATE = {
   board,
 };
 
-export default INITIAL_PLAYER_STATE;
+export const MOVE_TYPES = {
+  PIECE: 0,
+  BUTTON: 1,
+};

@@ -1,0 +1,46 @@
+.touch-control-button {
+  width: var(--touch-button-size);
+  height: var(--touch-button-size);
+  font-size: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  background-size: 100% 100%;
+}
+
+.touch-control-button--toggle-keyboard {
+  margin-left: calc(var(--touch-button-size) * -1);
+}
+
+.touch-control-button--place {
+  height: calc(var(--touch-button-size) * 2);
+  grid-column-start: 4;
+  grid-row-start: 1;
+  grid-row-end: 3;
+}
+
+.touch-control-button--up {
+  grid-column-start: 2;
+}
+
+.touch-control-button--down {
+  grid-column-start: 2;
+}
+
+.touch-control-button--left {
+  grid-column-start: 1;
+  grid-row-start: 2;
+}
+
+.touch-control-button--right {
+  grid-column-start: 3;
+  grid-row-start: 2;
+}
+
+.touch-control-button--flip {
+  grid-column-start: 1;
+  grid-row-start: 1;
+}
+
+.touch-control-button--rotate {
+  grid-column-start: 3;
+  grid-row-start: 1;
+}
