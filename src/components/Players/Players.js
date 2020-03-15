@@ -1,20 +1,20 @@
 import React from 'react';
-import Board from 'components/Board';
+import Player from 'components/Player';
 
-import './Boards.css';
+import './Players.css';
 
-const Boards = ({
+const Players = ({
   players,
   currentPlayerIdx,
   selectedPiece,
   gameFinished,
   piecePlaced,
 }) => (
-  <div className="boards">
+  <div className="players">
     {players.map((player, idx) => {
       const isCurrentPlayerBoard = idx === currentPlayerIdx;
       return (
-        <Board
+        <Player
           key={idx}
           board={player.board}
           current={isCurrentPlayerBoard}
@@ -29,4 +29,4 @@ const Boards = ({
   </div>
 );
 
-export default Boards;
+export default Players;

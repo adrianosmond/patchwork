@@ -19,9 +19,9 @@ function shuffle(array) {
 }
 /* eslint-enable no-param-reassign */
 
-const pieces = [];
+const INITIAL_PIECES = [];
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 2, 1],
@@ -33,7 +33,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 0, 0, 0],
@@ -45,7 +45,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [0, 0, 0, 1],
@@ -57,7 +57,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [0, 1, 0, 0],
@@ -69,7 +69,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [0, 2, 0],
@@ -81,7 +81,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [0, 1, 0, 0],
@@ -93,7 +93,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [0, 0, 1, 0, 0],
@@ -105,7 +105,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 2, 0],
@@ -117,7 +117,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [1, 0, 1],
@@ -129,7 +129,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 2, 0],
@@ -141,7 +141,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [0, 2, 0],
@@ -153,7 +153,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 2],
@@ -164,7 +164,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [[2, 1, 1, 1, 1]],
     costButtons: 7,
@@ -172,7 +172,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [[2, 1, 1, 1]],
     costButtons: 3,
@@ -180,7 +180,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [[1, 1, 1]],
     costButtons: 2,
@@ -188,7 +188,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 1, 1, 1],
@@ -199,7 +199,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [0, 0, 2, 0],
@@ -210,7 +210,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [0, 2, 2, 0],
@@ -221,7 +221,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [0, 1, 0],
@@ -232,7 +232,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [1, 1, 0],
@@ -243,7 +243,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 0, 0, 0],
@@ -254,7 +254,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 2, 0, 0],
@@ -265,7 +265,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 1, 0],
@@ -276,7 +276,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 2, 0],
@@ -287,7 +287,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [1, 1, 1, 0],
@@ -298,7 +298,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 1, 1, 0],
@@ -309,7 +309,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [1, 1, 1],
@@ -320,7 +320,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 0, 0],
@@ -331,7 +331,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [2, 0, 0],
@@ -342,7 +342,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [1, 0],
@@ -353,7 +353,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [1, 0],
@@ -364,7 +364,7 @@ pieces.push(
   }),
 );
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [
       [0, 2, 1, 0],
@@ -376,11 +376,11 @@ pieces.push(
   }),
 );
 
-shuffle(pieces);
-shuffle(pieces);
-shuffle(pieces);
+shuffle(INITIAL_PIECES);
+shuffle(INITIAL_PIECES);
+shuffle(INITIAL_PIECES);
 
-pieces.push(
+INITIAL_PIECES.push(
   makePiece({
     shape: [[1, 1]],
     costButtons: 2,
@@ -388,16 +388,13 @@ pieces.push(
   }),
 );
 
-const PATCH_INDEX = pieces.length + 1;
+const PATCH_INDEX = INITIAL_PIECES.length + 1;
 
-const WON_PATCH = {
-  selectedPieceIndex: PATCH_INDEX,
-  selectedPiece: {
-    shape: [[1]],
-    costButtons: 0,
-    costTime: 0,
-    colour: 'var(--patch-colour)',
-  },
+const PATCH = {
+  shape: [[1]],
+  costButtons: 0,
+  costTime: 0,
+  colour: 'var(--patch-colour)',
 };
 
-export { pieces, PATCH_INDEX, WON_PATCH };
+export { INITIAL_PIECES, PATCH_INDEX, PATCH };

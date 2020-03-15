@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 
 import Scoreboard from 'components/Scoreboard';
-import Boards from 'components/Boards';
+import Players from 'components/Players';
 import Track from 'components/Track';
 import Instructions from 'components/Instructions';
 
 import { INITIAL_PLAYER_STATE, MOVE_TYPES } from 'constants/game';
-import { pieces, WON_PATCH, PATCH_INDEX } from 'constants/pieces';
+import { INITIAL_PIECES, PATCH_INDEX, PATCH } from 'constants/pieces';
 import {
   didPlayerPassPatch,
   calculateNewScore,
@@ -14,184 +14,150 @@ import {
   calculateNewPosition,
   hasSevenBySeven,
 } from 'constants/utils';
+
 import { SCOREBOARD_LENGTH } from 'constants/scoreboard';
 
 import './App.css';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      players: [{ ...INITIAL_PLAYER_STATE }, { ...INITIAL_PLAYER_STATE }],
-      currentPlayerIdx: 0,
-      sevenBySevenWon: false,
-      pieces,
-      selectedPiece: null,
-      selectedPieceIndex: null,
-      gameFinished: false,
-    };
-  }
+const reachedEnd = player => player.position === SCOREBOARD_LENGTH;
 
-  piecePlaced = newBoard => {
-    this.updatePlayerState(MOVE_TYPES.PIECE, newBoard);
-  };
+const App = () => {
+  const [players, setPlayers] = useState([
+    { ...INITIAL_PLAYER_STATE },
+    { ...INITIAL_PLAYER_STATE },
+  ]);
+  const [currentPlayerIdx, setCurrentPlayerIdx] = useState(0);
+  const [sevenBySevenWon, setSevenBySevenWon] = useState(false);
+  const [selectedPiece, setSelectedPiece] = useState(null);
+  const [selectedPieceIdx, setSelectedPieceIdx] = useState(null);
+  const [gameFinished, setGameFinished] = useState(false);
+  const [pieces, setPieces] = useState(INITIAL_PIECES);
+  const placingPatch = selectedPieceIdx === PATCH_INDEX;
+  const maxCost = players[currentPlayerIdx].buttons;
 
-  makeButtons = () => {
-    this.updatePlayerState(MOVE_TYPES.BUTTON);
-  };
+  useEffect(() => {
+    const player = players[currentPlayerIdx];
+    const opponent = players[(currentPlayerIdx + 1) % 2];
+    if (reachedEnd(player) && reachedEnd(opponent)) {
+      setGameFinished(true);
+    }
+  }, [currentPlayerIdx, players]);
 
-  selectPiece = selectedPieceIndex => {
-    this.setState({
-      selectedPieceIndex,
-      selectedPiece: { ...this.state.pieces[selectedPieceIndex] },
-    });
-  };
+  const selectPiece = useCallback(
+    idx => {
+      setSelectedPieceIdx(idx);
+      setSelectedPiece({ ...pieces[idx] });
+    },
+    [pieces],
+  );
 
-  makePlayerArrayClone() {
-    return [{ ...this.state.players[0] }, { ...this.state.players[1] }];
-  }
+  const checkSevenBySeven = useCallback(
+    player => {
+      if (sevenBySevenWon) return player.hasSevenBySeven;
 
-  getCurrentPlayer() {
-    return this.state.players[this.state.currentPlayerIdx];
-  }
+      if (hasSevenBySeven(player.board)) {
+        setSevenBySevenWon(true);
+        return true;
+      }
+      return false;
+    },
+    [sevenBySevenWon],
+  );
 
-  getOpponent() {
-    return this.state.players[(this.state.currentPlayerIdx + 1) % 2];
-  }
+  const checkWhoseTurn = useCallback(
+    newPosition => {
+      const { position } = players[currentPlayerIdx];
+      const opponent = players[(currentPlayerIdx + 1) % 2];
+      if (didPlayerPassPatch(position, newPosition, opponent.position)) {
+        setSelectedPieceIdx(PATCH_INDEX);
+        setSelectedPiece(PATCH);
+      } else {
+        if (newPosition > opponent.position) {
+          setCurrentPlayerIdx((currentPlayerIdx + 1) % 2);
+        }
+        setSelectedPiece(null);
+        setSelectedPieceIdx(null);
+      }
+    },
+    [currentPlayerIdx, players],
+  );
 
-  updatePlayerState(moveType, newBoard = null) {
-    const newPlayers = this.makePlayerArrayClone();
-    const player = newPlayers[this.state.currentPlayerIdx];
-    const prevPosition = player.position;
+  const updatePlayer = useCallback(
+    (moveType, newBoard) => {
+      const currentPlayer = players[currentPlayerIdx];
+      const opponent = players[(currentPlayerIdx + 1) % 2];
+      const newPlayersArr = [{ ...players[0] }, { ...players[1] }];
+      const playerToUpdate = newPlayersArr[currentPlayerIdx];
 
-    player.position = calculateNewPosition(
-      moveType,
-      player,
-      this.getOpponent(),
-      this.state.selectedPiece,
-    );
-
-    if (moveType === MOVE_TYPES.PIECE) {
-      player.board = newBoard;
-      player.buttons = calculateNewButtons(
-        player,
-        MOVE_TYPES.PIECE,
-        player.position,
-        newBoard,
-        this.state.selectedPiece,
+      if (newBoard) playerToUpdate.board = newBoard;
+      if (moveType === MOVE_TYPES.PIECE) {
+        playerToUpdate.hasSevenBySeven = checkSevenBySeven(playerToUpdate);
+      }
+      playerToUpdate.position = calculateNewPosition(
+        moveType,
+        currentPlayer,
+        opponent,
+        selectedPiece,
       );
-      player.hasSevenBySeven = this.checkSevenBySeven(player);
-      this.updatePiecesTrack();
-    } else if (moveType === MOVE_TYPES.BUTTON) {
-      player.buttons = calculateNewButtons(
-        this.getCurrentPlayer(),
-        MOVE_TYPES.BUTTON,
-        player.position,
-        player.board,
+      playerToUpdate.buttons = calculateNewButtons(
+        moveType,
+        currentPlayer,
+        playerToUpdate.position,
+        playerToUpdate.board,
+        moveType === MOVE_TYPES.PIECE ? selectedPiece : undefined,
       );
+      playerToUpdate.score = calculateNewScore(playerToUpdate);
+      setPlayers(newPlayersArr);
+      return playerToUpdate;
+    },
+    [checkSevenBySeven, currentPlayerIdx, players, selectedPiece],
+  );
+
+  const updatePiecesTrack = useCallback(() => {
+    if (!placingPatch) {
+      setPieces([
+        ...pieces.slice(selectedPieceIdx + 1),
+        ...pieces.slice(0, selectedPieceIdx),
+      ]);
     }
+  }, [pieces, placingPatch, selectedPieceIdx]);
 
-    player.score = calculateNewScore(player);
+  const piecePlaced = useCallback(
+    newBoard => {
+      const { position } = updatePlayer(MOVE_TYPES.PIECE, newBoard);
+      updatePiecesTrack();
+      checkWhoseTurn(position);
+    },
+    [checkWhoseTurn, updatePiecesTrack, updatePlayer],
+  );
 
-    this.setState({
-      players: newPlayers,
-    });
+  const makeButtons = useCallback(() => {
+    const { position } = updatePlayer(MOVE_TYPES.BUTTON);
+    checkWhoseTurn(position);
+  }, [updatePlayer, checkWhoseTurn]);
 
-    this.checkIfPlayerPassedPatch(prevPosition, player, this.getOpponent());
-    this.checkForGameEnd(newPlayers);
-  }
-
-  updatePiecesTrack() {
-    const { selectedPieceIndex } = this.state;
-    let currentPieces = this.state.pieces;
-    if (selectedPieceIndex !== PATCH_INDEX) {
-      currentPieces = [
-        ...currentPieces.slice(selectedPieceIndex + 1),
-        ...currentPieces.slice(0, selectedPieceIndex),
-      ];
-    }
-    this.setState({
-      pieces: currentPieces,
-    });
-  }
-
-  checkIfPlayerPassedPatch(prevPosition, player, opponent) {
-    if (!didPlayerPassPatch(prevPosition, player.position, opponent.position)) {
-      const currentPlayerIdx = this.assessCurrentPlayer(player, opponent);
-      this.setState({
-        currentPlayerIdx,
-        selectedPieceIndex: null,
-        selectedPiece: null,
-      });
-    } else {
-      this.setState(WON_PATCH);
-    }
-  }
-
-  assessCurrentPlayer(player, opponent) {
-    let { currentPlayerIdx } = this.state;
-    if (player.position > opponent.position) {
-      currentPlayerIdx = (currentPlayerIdx + 1) % 2;
-    }
-    return currentPlayerIdx;
-  }
-
-  checkSevenBySeven(player) {
-    if (this.state.sevenBySevenWon) return player.hasSevenBySeven;
-
-    if (hasSevenBySeven(player.board)) {
-      this.setState({
-        sevenBySevenWon: true,
-      });
-      return true;
-    }
-    return false;
-  }
-
-  checkForGameEnd(players) {
-    if (
-      !this.state.gameFinished &&
-      players[0].position === SCOREBOARD_LENGTH &&
-      players[1].position === SCOREBOARD_LENGTH
-    ) {
-      this.setState({
-        gameFinished: true,
-      });
-    }
-  }
-
-  render() {
-    const {
-      players,
-      gameFinished,
-      currentPlayerIdx,
-      selectedPieceIndex,
-      selectedPiece,
-      pieces: currentPieces,
-    } = this.state;
-    return (
-      <div>
-        <Instructions />
-        <Scoreboard players={players} currentPlayerIdx={currentPlayerIdx} />
-        <Boards
-          players={players}
-          currentPlayerIdx={currentPlayerIdx}
-          selectedPiece={selectedPiece}
-          gameFinished={gameFinished}
-          piecePlaced={this.piecePlaced}
+  return (
+    <div>
+      <Instructions />
+      <Scoreboard players={players} currentPlayerIdx={currentPlayerIdx} />
+      <Players
+        players={players}
+        currentPlayerIdx={currentPlayerIdx}
+        selectedPiece={selectedPiece}
+        gameFinished={gameFinished}
+        piecePlaced={piecePlaced}
+      />
+      {!gameFinished && (
+        <Track
+          pieces={pieces}
+          placingPatch={placingPatch}
+          selectPiece={selectPiece}
+          makeButtons={makeButtons}
+          maxCost={maxCost}
         />
-        {!gameFinished && (
-          <Track
-            pieces={currentPieces}
-            placingPatch={selectedPieceIndex === PATCH_INDEX}
-            selectPiece={this.selectPiece}
-            makeButtons={this.makeButtons}
-            maxCost={this.getCurrentPlayer().buttons}
-          />
-        )}
-      </div>
-    );
-  }
-}
+      )}
+    </div>
+  );
+};
 
 export default App;

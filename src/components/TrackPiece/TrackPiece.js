@@ -5,13 +5,13 @@ import Piece from 'components/Piece';
 
 import './TrackPiece.css';
 
-const TrackPiece = ({ selectable, idx, selectPiece, piece }) => (
+const TrackPiece = ({ selectPiece, piece }) => (
   <div
     className={classnames({
       'track-piece': true,
-      'track-piece--not-selectable': !selectable,
+      'track-piece--not-selectable': !selectPiece,
     })}
-    onClick={() => selectable && selectPiece(idx)}
+    onClick={selectPiece}
   >
     <div className="track-piece__costs">
       <span className="track-piece__costs-row track-piece__costs-row--buttons">

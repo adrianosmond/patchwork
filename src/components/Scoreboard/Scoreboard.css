@@ -7,6 +7,7 @@
 }
 
 .scoreboard__track {
+  position: relative;
   display: flex;
   overflow-x: hidden;
   border-left: 1px solid #000;
@@ -22,7 +23,7 @@
 }
 
 .scoreboard__cell--button-after::after {
-  content: "";
+  content: '';
   position: absolute;
   top: calc(var(--square-size) / 4);
   right: calc(var(--square-size) / -4);
@@ -33,7 +34,7 @@
 }
 
 .scoreboard__cell--patch-after::after {
-  content: "";
+  content: '';
   position: absolute;
   top: calc(var(--square-size) / 4);
   right: calc(var(--square-size) / -4);
@@ -50,7 +51,7 @@
 .scoreboard__player {
   position: absolute;
   top: calc(var(--square-size) / 4);
-  left: calc(var(--square-size) / 4);
+  margin-left: calc(var(--square-size) / 4);
   width: calc(var(--square-size) / 2);
   height: calc(var(--square-size) / 2);
   border-radius: 4px;
@@ -63,10 +64,8 @@
 
 .scoreboard__player--current {
   z-index: 1;
-  margin-top: -4px;
 }
 
-.scoreboard__player--current:only-child {
-  z-index: 1;
-  margin-top: 0;
+.scoreboard__player--current.scoreboard__player--scores-equal {
+  margin-top: -4px;
 }

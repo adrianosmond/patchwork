@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import classnames from 'classnames';
 
 import {
@@ -13,74 +13,56 @@ import './Scoreboard.css';
 
 const track = Array(...Array(SCOREBOARD_LENGTH + 1));
 
-class Scoreboard extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      lastPlace: 0,
-    };
-  }
+const Scoreboard = ({ players, currentPlayerIdx }) => {
+  const [lastPlace, setLastPlace] = useState(0);
+  const trackEl = useRef(null);
+  const farthest = Math.max(...players.map(p => p.position));
+  const scoresEqual = players[0].position === players[1].position;
 
-  componentDidUpdate() {
-    const lastPlace = Math.min(...this.props.players.map(p => p.position));
-    if (lastPlace !== this.state.lastPlace) {
+  useEffect(() => {
+    const newLastPlace = Math.min(...players.map(p => p.position));
+    if (newLastPlace !== lastPlace) {
       interpolate(
-        this.trackEl.scrollLeft,
+        trackEl.current.scrollLeft,
         Math.max(0, TILE_SIZE * (lastPlace - 1)),
         val => {
-          this.trackEl.scrollLeft = val;
+          trackEl.current.scrollLeft = val;
         },
       );
-      this.setState({
-        lastPlace,
-      });
+      setLastPlace(newLastPlace);
     }
-  }
+  }, [lastPlace, players]);
 
-  render() {
-    const { players, currentPlayerIdx } = this.props;
-    const farthest = Math.max(...players.map(p => p.position));
-    return (
-      <div className="scoreboard">
-        <div
-          className="scoreboard__track"
-          ref={el => {
-            this.trackEl = el;
-          }}
-        >
-          {track.map((cell, idx) => (
-            <div
-              key={idx}
-              className={classnames({
-                scoreboard__cell: true,
-                'scoreboard__cell--button-after': BUTTONS_AFTER.includes(idx),
-                'scoreboard__cell--patch-after': PATCHES_AFTER.includes(idx),
-                'scoreboard__cell--patch-taken':
-                  PATCHES_AFTER.includes(idx) && idx < farthest,
-              })}
-            >
-              {players.map((player, playerIdx) => {
-                if (player.position !== idx) {
-                  return null;
-                }
-                const isCurrentPlayer = playerIdx === currentPlayerIdx;
-                return (
-                  <div
-                    key={playerIdx}
-                    className={classnames({
-                      scoreboard__player: true,
-                      'scoreboard__player--current': isCurrentPlayer,
-                      [`scoreboard__player--${playerIdx + 1}`]: true,
-                    })}
-                  />
-                );
-              })}
-            </div>
-          ))}
-        </div>
+  return (
+    <div className="scoreboard">
+      <div className="scoreboard__track" ref={trackEl}>
+        {track.map((cell, idx) => (
+          <div
+            key={idx}
+            className={classnames({
+              scoreboard__cell: true,
+              'scoreboard__cell--button-after': BUTTONS_AFTER.includes(idx),
+              'scoreboard__cell--patch-after': PATCHES_AFTER.includes(idx),
+              'scoreboard__cell--patch-taken':
+                PATCHES_AFTER.includes(idx) && idx < farthest,
+            })}
+          />
+        ))}
+        {players.map((player, playerIdx) => (
+          <div
+            key={playerIdx}
+            className={classnames({
+              scoreboard__player: true,
+              [`scoreboard__player--${playerIdx + 1}`]: true,
+              'scoreboard__player--current': playerIdx === currentPlayerIdx,
+              'scoreboard__player--scores-equal': scoresEqual,
+            })}
+            style={{ left: TILE_SIZE * player.position }}
+          />
+        ))}
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default Scoreboard;

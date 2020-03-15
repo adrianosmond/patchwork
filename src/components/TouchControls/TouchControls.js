@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import classnames from 'classnames';
 
 import TouchControlButton from 'components/TouchControlButton';
@@ -15,93 +15,77 @@ import placeImg from './place.png';
 
 const SHOW_KEYBOARD_KEY = 'SHOW_TOUCH_KEYBOARD';
 
-class TouchControls extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showKeyboard: false,
-    };
-  }
-
-  componentDidMount() {
-    let showKeyboard;
+const TouchControls = ({ up, down, left, right, flip, rotate, place }) => {
+  const [showKeyboard, setShowKeyboard] = useState(false);
+  useEffect(() => {
     try {
-      showKeyboard = JSON.parse(sessionStorage.getItem(SHOW_KEYBOARD_KEY));
+      setShowKeyboard(JSON.parse(sessionStorage.getItem(SHOW_KEYBOARD_KEY)));
     } catch (e) {
-      showKeyboard = false;
+      setShowKeyboard(false);
     }
+  }, []);
 
-    this.setState({
-      showKeyboard,
+  const toggleKeyboard = useCallback(() => {
+    setShowKeyboard(isShown => {
+      sessionStorage.setItem(SHOW_KEYBOARD_KEY, !isShown);
+      return !isShown;
     });
-  }
+  }, []);
 
-  toggleKeyboard = () => {
-    const showKeyboard = !this.state.showKeyboard;
-    this.setState({
-      showKeyboard,
-    });
-    sessionStorage.setItem(SHOW_KEYBOARD_KEY, showKeyboard);
-  };
-
-  render() {
-    const { up, down, left, right, flip, rotate, place } = this.props;
-    const { showKeyboard } = this.state;
-    return (
-      <div
-        className={classnames({
-          'touch-controls': true,
-          'touch-controls--visible': showKeyboard,
-        })}
-      >
+  return (
+    <div
+      className={classnames({
+        'touch-controls': true,
+        'touch-controls--visible': showKeyboard,
+      })}
+    >
+      <TouchControlButton
+        name="toggle-keyboard"
+        img={touchImg}
+        onClick={toggleKeyboard}
+        title="Toggle keyboard"
+      />
+      <div className="touch-controls__keyboard">
+        <TouchControlButton name="up" img={upImg} onClick={up} title="Up" />
         <TouchControlButton
-          name="toggle-keyboard"
-          img={touchImg}
-          onClick={this.toggleKeyboard}
-          title="Toggle keyboard"
+          name="down"
+          img={downImg}
+          onClick={down}
+          title="Down"
         />
-        <div className="touch-controls__keyboard">
-          <TouchControlButton name="up" img={upImg} onClick={up} title="Up" />
-          <TouchControlButton
-            name="down"
-            img={downImg}
-            onClick={down}
-            title="Down"
-          />
-          <TouchControlButton
-            name="left"
-            img={leftImg}
-            onClick={left}
-            title="Left"
-          />
-          <TouchControlButton
-            name="right"
-            img={rightImg}
-            onClick={right}
-            title="Right"
-          />
-          <TouchControlButton
-            name="flip"
-            img={rotateImg}
-            onClick={rotate}
-            title="Rotate"
-          />
-          <TouchControlButton
-            name="rotate"
-            img={flipImg}
-            onClick={flip}
-            title="Flip"
-          />
-          <TouchControlButton
-            name="place"
-            img={placeImg}
-            onClick={place}
-            title="Place"
-          />
-        </div>
+        <TouchControlButton
+          name="left"
+          img={leftImg}
+          onClick={left}
+          title="Left"
+        />
+        <TouchControlButton
+          name="right"
+          img={rightImg}
+          onClick={right}
+          title="Right"
+        />
+        <TouchControlButton
+          name="flip"
+          img={rotateImg}
+          onClick={rotate}
+          title="Rotate"
+        />
+        <TouchControlButton
+          name="rotate"
+          img={flipImg}
+          onClick={flip}
+          title="Flip"
+        />
+        <TouchControlButton
+          name="place"
+          img={placeImg}
+          onClick={place}
+          title="Place"
+        />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default TouchControls;

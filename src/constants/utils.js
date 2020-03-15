@@ -13,7 +13,7 @@ const gatherCol = (shape, col) => {
   return newRow;
 };
 
-const rotateShape = shape => {
+export const rotateShape = shape => {
   const newShape = [];
   const newRows = shape[0].length;
 
@@ -23,12 +23,12 @@ const rotateShape = shape => {
   return newShape;
 };
 
-const flipShape = shape => {
+export const flipShape = shape => {
   const newShape = shape.map(row => row.slice());
   return newShape.reverse();
 };
 
-const interpolate = (from, to, callback, duration = 500) => {
+export const interpolate = (from, to, callback, duration = 500) => {
   const difference = to - from;
   const start = new Date().getTime();
   const easing = t => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
@@ -46,7 +46,7 @@ const interpolate = (from, to, callback, duration = 500) => {
   requestAnimationFrame(frame);
 };
 
-const checkBoard = (board, row, col) => {
+export const checkBoard = (board, row, col) => {
   for (let i = 0; i < 7; i += 1) {
     for (let j = 0; j < 7; j += 1) {
       if (board[row + i][col + j] === false) {
@@ -57,7 +57,7 @@ const checkBoard = (board, row, col) => {
   return true;
 };
 
-const calculateNewScore = player => {
+export const calculateNewScore = player => {
   const negatives = player.board.reduce(
     (total, currentRow) =>
       total + currentRow.reduce((t, c) => t + (c === false ? -2 : 0), 0),
@@ -66,7 +66,7 @@ const calculateNewScore = player => {
   return negatives + player.buttons + (player.hasSevenBySeven ? 7 : 0);
 };
 
-const buttonsEarned = (prevPosition, currentPosition, board) => {
+export const buttonsEarned = (prevPosition, currentPosition, board) => {
   const nextButton = BUTTONS_AFTER.find(el => el >= prevPosition);
   if (nextButton < currentPosition) {
     return board.reduce(
@@ -79,7 +79,7 @@ const buttonsEarned = (prevPosition, currentPosition, board) => {
   return 0;
 };
 
-const hasSevenBySeven = board => {
+export const hasSevenBySeven = board => {
   for (let i = 0; i <= 2; i += 1) {
     for (let j = 0; j <= 2; j += 1) {
       if (checkBoard(board, i, j)) {
@@ -90,9 +90,9 @@ const hasSevenBySeven = board => {
   return false;
 };
 
-const calculateNewButtons = (
-  player,
+export const calculateNewButtons = (
   moveType,
+  player,
   newPosition,
   playerBoard,
   selectedPiece = null,
@@ -107,7 +107,12 @@ const calculateNewButtons = (
   return newButtons;
 };
 
-const calculateNewPosition = (moveType, player, opponent, selectedPiece) => {
+export const calculateNewPosition = (
+  moveType,
+  player,
+  opponent,
+  selectedPiece,
+) => {
   let newPosition = 0;
   if (moveType === MOVE_TYPES.PIECE) {
     newPosition = player.position + selectedPiece.costTime;
@@ -118,7 +123,7 @@ const calculateNewPosition = (moveType, player, opponent, selectedPiece) => {
   return newPosition;
 };
 
-const didPlayerPassPatch = (
+export const didPlayerPassPatch = (
   prevPosition,
   currentPosition,
   opponentPosition,
@@ -129,15 +134,22 @@ const didPlayerPassPatch = (
   return false;
 };
 
-export {
-  rotateShape,
-  flipShape,
-  interpolate,
-  checkBoard,
-  calculateNewScore,
-  calculateNewButtons,
-  calculateNewPosition,
-  buttonsEarned,
-  didPlayerPassPatch,
-  hasSevenBySeven,
+export const makeNewBoard = (board, shape, colour, pieceTop, pieceLeft) => {
+  const newBoard = board.map(row => row.slice());
+
+  for (let i = 0; i < shape.length; i += 1) {
+    for (let j = 0; j < shape[0].length; j += 1) {
+      if (shape[i][j] !== 0) {
+        if (board[pieceTop + i][pieceLeft + j] !== false) {
+          return false;
+        }
+        newBoard[pieceTop + i][pieceLeft + j] = {
+          value: shape[i][j],
+          colour,
+        };
+      }
+    }
+  }
+
+  return newBoard;
 };

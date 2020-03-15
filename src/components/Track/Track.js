@@ -23,9 +23,7 @@ const Track = ({ pieces, makeButtons, placingPatch, maxCost, selectPiece }) => {
         return (
           <TrackPiece
             key={idx}
-            selectable={selectable}
-            idx={idx}
-            selectPiece={selectPiece}
+            selectPiece={selectable ? () => selectPiece(idx) : null}
             piece={piece}
           />
         );
