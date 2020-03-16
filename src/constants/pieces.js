@@ -388,8 +388,6 @@ INITIAL_PIECES.push(
   }),
 );
 
-const PATCH_INDEX = INITIAL_PIECES.length + 1;
-
 const PATCH = {
   shape: [[1]],
   costButtons: 0,
@@ -397,4 +395,4 @@ const PATCH = {
   colour: 'var(--patch-colour)',
 };
 
-export { INITIAL_PIECES, PATCH_INDEX, PATCH };
+export { INITIAL_PIECES, PATCH };

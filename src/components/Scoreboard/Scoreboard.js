@@ -57,7 +57,9 @@ const Scoreboard = ({ players, currentPlayerIdx }) => {
               'scoreboard__player--current': playerIdx === currentPlayerIdx,
               'scoreboard__player--scores-equal': scoresEqual,
             })}
-            style={{ left: TILE_SIZE * player.position }}
+            style={{
+              '--x-translate': `${TILE_SIZE * player.position}px`,
+            }}
           />
         ))}
       </div>

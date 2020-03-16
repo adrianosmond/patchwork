@@ -49,13 +49,18 @@
 }
 
 .scoreboard__player {
+  --x-translate: 0;
+  --y-translate: 0;
   position: absolute;
   top: calc(var(--square-size) / 4);
+  left: 0;
   margin-left: calc(var(--square-size) / 4);
   width: calc(var(--square-size) / 2);
   height: calc(var(--square-size) / 2);
   border-radius: 4px;
   background-color: limegreen;
+  transform: translateX(var(--x-translate)) translateY(var(--y-translate));
+  transition: transform 0.5s;
 }
 
 .scoreboard__player--2 {
@@ -67,5 +72,5 @@
 }
 
 .scoreboard__player--current.scoreboard__player--scores-equal {
-  margin-top: -4px;
+  --y-translate: -4px;
 }

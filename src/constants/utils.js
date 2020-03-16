@@ -3,7 +3,6 @@ import {
   PATCHES_AFTER,
   SCOREBOARD_LENGTH,
 } from 'constants/scoreboard';
-import { MOVE_TYPES } from 'constants/game';
 
 const gatherCol = (shape, col) => {
   const newRow = [];
@@ -11,6 +10,17 @@ const gatherCol = (shape, col) => {
     newRow.push(shape[i][col]);
   }
   return newRow;
+};
+
+const checkBoard = (board, row, col) => {
+  for (let i = 0; i < 7; i += 1) {
+    for (let j = 0; j < 7; j += 1) {
+      if (board[row + i][col + j] === false) {
+        return false;
+      }
+    }
+  }
+  return true;
 };
 
 export const rotateShape = shape => {
@@ -46,26 +56,6 @@ export const interpolate = (from, to, callback, duration = 500) => {
   requestAnimationFrame(frame);
 };
 
-export const checkBoard = (board, row, col) => {
-  for (let i = 0; i < 7; i += 1) {
-    for (let j = 0; j < 7; j += 1) {
-      if (board[row + i][col + j] === false) {
-        return false;
-      }
-    }
-  }
-  return true;
-};
-
-export const calculateNewScore = player => {
-  const negatives = player.board.reduce(
-    (total, currentRow) =>
-      total + currentRow.reduce((t, c) => t + (c === false ? -2 : 0), 0),
-    0,
-  );
-  return negatives + player.buttons + (player.hasSevenBySeven ? 7 : 0);
-};
-
 export const buttonsEarned = (prevPosition, currentPosition, board) => {
   const nextButton = BUTTONS_AFTER.find(el => el >= prevPosition);
   if (nextButton < currentPosition) {
@@ -90,31 +80,37 @@ export const hasSevenBySeven = board => {
   return false;
 };
 
+export const calculateNewScore = player => {
+  const negatives = player.board.reduce(
+    (total, currentRow) =>
+      total + currentRow.reduce((t, c) => t + (c === false ? -2 : 0), 0),
+    0,
+  );
+  return negatives + player.buttons + (player.hasSevenBySeven ? 7 : 0);
+};
+
 export const calculateNewButtons = (
-  moveType,
   player,
-  newPosition,
-  playerBoard,
+  { position: newPosition, board },
   selectedPiece = null,
 ) => {
   let newButtons = player.buttons;
-  if (moveType === MOVE_TYPES.PIECE) {
+  if (selectedPiece) {
     newButtons -= selectedPiece.costButtons;
   } else {
     newButtons += newPosition - player.position;
   }
-  newButtons += buttonsEarned(player.position, newPosition, playerBoard);
+  newButtons += buttonsEarned(player.position, newPosition, board);
   return newButtons;
 };
 
 export const calculateNewPosition = (
-  moveType,
   player,
   opponent,
-  selectedPiece,
+  selectedPiece = null,
 ) => {
   let newPosition = 0;
-  if (moveType === MOVE_TYPES.PIECE) {
+  if (selectedPiece) {
     newPosition = player.position + selectedPiece.costTime;
   } else {
     newPosition = opponent.position + 1;
@@ -123,7 +119,7 @@ export const calculateNewPosition = (
   return newPosition;
 };
 
-export const didPlayerPassPatch = (
+export const playerPassedPatch = (
   prevPosition,
   currentPosition,
   opponentPosition,
